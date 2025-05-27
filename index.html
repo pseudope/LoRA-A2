@@ -129,15 +129,14 @@
                   </div>
 
                   <div class="is-size-5 publication-authors">
-                    <span class="author-block">{<sup>1</sup>Department of Computer Science and Engineering, <sup>2</sup>Graduate School of Artificial Intelligence}<br>
+                    <span class="author-block">{<sup>1</sup> Department of Computer Science and Engineering, <sup>2</sup> Graduate School of Artificial Intelligence}<br>
                       POSTECH, South Korea
                     </span>
                     
                     <span class="eql-cntrb"><small><br><sup>*</sup>Equal Contribution &nbsp; <sup>†</sup>Corresponding Author</small></span><br>
                     
-                    <span class="author-block">
-                      ACL 2025 (Main, Long)
-                    </span>
+                    <span class="publication-venue">ACL 2025 (Main, Long)</span>
+
                   </div>
 
                   <div class="column has-text-centered">
@@ -198,11 +197,11 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <figure class="image is-16by9">
+      <figure class="image">
         <img src="./static/images/main_figure.png" alt="Teaser image", style="max-width: 100%; height: auto;">
       </figure>
-      <h2 class="subtitle has-text-centered">
-        LoRA-A<sup>2</sup> comprises two key components: <strong>Alternating freeze</strong> and <strong>Adaptive rank selection</strong>.
+      <h2 class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+        <strong>LoRA-A<sup>2</sup></strong> comprises two key components: <strong>Alternating freeze</strong> and <strong>Adaptive rank selection</strong>.
       </h2>
     </div>
   </div>
@@ -242,24 +241,148 @@
         <h2 class="title is-3">Discordance Problem in Federated LoRA</h2>
         <div class="content has-text-justified">
           <p>
-            When fine-tuning a pre-trained weight matrix \( W_0 \in \mathbb{R}^{d_1 \times d_2} \) to obtain \( W \),
-            LoRA achieves this by decomposing \( \Delta W \), the update of the weight matrix,
-            into smaller matrices \( B \in \mathbb{R}^{d_1 \times r} \) and \(A \in \mathbb{R}^{r \times d_2} \):
-            \[ W = W_{0} + \Delta W = W_{0} + BA, \]
-            where \( r \ll \{ d_1, d_2 \} \) denotes the rank of LoRA.
-            With this approximation, the number of trainable parameters is reduced from \( d_1 \cdot d_2 \) to \( r \cdot (d_1 + d_2) \).
-
-            LoRA presents a promising approach in Federated Learning (FL) for reducing communication costs,
-            as only low rank module \( B \) and \( A \) are trained and transmitted,
-            allowing the number of communicated parameters to be linearly reduced by the rank \( r \) of LoRA modules.
-            However, the straightforward application of LoRA in FL introduces a significant issue known as discordance, primarily due to aggregation algorithms.
-            In methods like FedAvg, where each weight is aggregated individually, discordance occurs between the actual and aggregated parameters. That is,
-            \[ \sum_{k=1}^K w_k \Delta W_k = \sum_{k=1}^K w_k B_k A_k \neq \left( \sum_{k=1}^K w_k B_k \right) \left( \sum_{k=1}^K w_k A_k \right) \]
-            in general, where \( \sum_{k=1}^K w_k = 1 \) with \( w_k \geq 0 \) for all \( k \in [K] \).
-            One might consider aggregating \( \Delta W_k = B_kA_k \) directly to eliminate the discordance,
-            but this approach entails decomposing \( \Delta W = \sum_{k=1}^K w_k \Delta W_k \) back into \( B \) and \( A \) for the next round,
-            which is computationally unstable and non-trivial. 
+            LoRA approximates the fine-tuned weight as \( W = W_0 + \Delta W = W_0 + BA \), where \( W_0 \) is the frozen pre-trained matrix,
+            and \( B \in \mathbb{R}^{d_1 \times r}, A \in \mathbb{R}^{r \times d_2} \) are low-rank matrices with rank \( r \ll \min(d_1, d_2) \).
+            This reduces the number of trainable parameters from \( d_1 \cdot d_2 \) to \( r \cdot (d_1 + d_2) \),
+            which benefits in both <strong>communication and computation efficiency</strong> in Federated Learning (FL).
           </p>
+        
+          <p>
+            However, due to <strong>the bilinear form of LoRA</strong>,
+            aggregating client updates \( ( \Delta W_k = B_kA_k \; \forall k \in [K] )\) leads to <strong>the discordance problem</strong>:
+          </p>
+        
+          <p>
+            \[ \sum_{k=1}^K w_k B_k A_k \neq \left( \sum_{k=1}^K w_k B_k \right) \left( \sum_{k=1}^K w_k A_k \right), \]
+          </p>
+        
+          <p>
+            where \( w_k \) are non-negative aggregation weights with \( \sum w_k = 1 \).
+            This mismatch degrades performance, which has led to a growing body of research aimed at addressing this issue.
+          </p>
+
+          <ul>
+            <li><strong>FFA-LoRA [Sun et al.]</strong> Let \( A_k = A_0 \) be frozen for all \( k \in [K] \), so that \[ \sum_{k=1}^K w_k B_k A_k = \left( \sum_{k=1}^K w_k B_k \right) A_0. \]</li>
+            <li><strong>FlexLoRA [Bai et al.]</strong> Aggregate \( B_kA_k \) directly. Then, using SVD, decompose it back into \[ \sum_{k=1}^K w_k B_k A_k = BA. \]</li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Limited parameter space in LoRA</h2>
+
+    <!-- 그림 2개 나란히 -->
+    <div class="columns is-vcentered">
+      
+      <!-- 왼쪽 그림 + 개별 캡션 -->
+      <div class="column has-text-centered">
+        <figure class="image is-4by3">
+          <img src="static/images/conflict_16_01.png" alt="Method A">
+        </figure>
+        <p class="caption">(a) \( Dir(0.1) \)</p>
+      </div>
+
+      <!-- 오른쪽 그림 + 개별 캡션 -->
+      <div class="column has-text-centered">
+        <figure class="image is-4by3">
+          <img src="static/images/conflict_16_001.png" alt="Method B">
+        </figure>
+        <p class="caption">(b) \( Dir(0.01) \).</p>
+      </div>
+
+    </div>
+
+    <!-- 공통 캡션 --> 
+    <p class="has-text-centered caption" style="margin-top: 1.5rem;">
+      <strong>Figure 1:</strong> Accuracy of previous Federated LoRA methods across different rank sizes in heterogeneous data settings.
+    </p>
+
+    <!-- <div class="content" style="margin-top: 1.5rem;">
+      <p>
+        Especially with low rank and high data heterogeneity, existing methods struggle to maintain performance.
+      </p>
+    </div> -->
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <div class="content" style="margin-top: 1.5rem;">
+            <p>
+              Especially with low rank and high data heterogeneity, existing methods struggle to maintain performance.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Alternating Freeze</h2>
+        <div class="content has-text-justified">
+          
+          <p>
+            asdf
+          </p>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Adaptive Rank Selection</h2>
+        <div class="content has-text-justified">
+          
+          <p>
+            asdf
+          </p>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Experimental Results</h2>
+        <div class="content has-text-justified">
+          
+          <p>
+            asdf
+          </p>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Ablation Studies</h2>
+        <div class="content has-text-justified">
+          
+          <p>
+            asdf
+          </p>
+          
         </div>
       </div>
     </div>
@@ -282,47 +405,8 @@
 </section>
 <!-- End teaser image -->
 
-<!-- Image carousel -->
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-       <div class="item">
-        <!-- Your image here -->
-        <img src="static/images/carousel1.jpg" alt="MY ALT TEXT"/>
-        <h2 class="subtitle has-text-centered">
-          First image description.
-        </h2>
-      </div>
-      <div class="item">
-        <!-- Your image here -->
-        <img src="static/images/carousel2.jpg" alt="MY ALT TEXT"/>
-        <h2 class="subtitle has-text-centered">
-          Second image description.
-        </h2>
-      </div>
-      <div class="item">
-        <!-- Your image here -->
-        <img src="static/images/carousel3.jpg" alt="MY ALT TEXT"/>
-        <h2 class="subtitle has-text-centered">
-         Third image description.
-       </h2>
-     </div>
-     <div class="item">
-      <!-- Your image here -->
-      <img src="static/images/carousel4.jpg" alt="MY ALT TEXT"/>
-      <h2 class="subtitle has-text-centered">
-        Fourth image description.
-      </h2>
-    </div>
-  </div>
-</div>
-</div>
-</section>
-<!-- End image carousel -->
-
 <!-- Paper poster -->
-<section class="hero is-small is-light">
+<!-- <section class="hero is-small is-light">
   <div class="hero-body">
     <div class="container">
       <h2 class="title">Poster</h2>
@@ -332,7 +416,7 @@
         
       </div>
     </div>
-  </section>
+  </section> -->
 <!--End paper poster -->
 
 
