@@ -56,20 +56,50 @@
       justify-content: space-between;
       align-items: center;
       padding: 10px 40px;
+      flex-wrap: nowrap;
+      max-width: 100%;
+      overflow-x: auto;
+      gap: 1rem;
     }
-
+  
+    .logo-bar img {
+      max-height: 60px;
+      height: auto;
+      width: auto;
+      max-width: 45%;
+      object-fit: contain;
+    }
+  
     .logo-left {
-      height: 60px;
       transform: scale(1.25);
       transform-origin: left center;
     }
-
+  
     .logo-right {
-      height: 60px;
       transform: scale(0.75);
       transform-origin: right center;
     }
-  </style>
+  
+    @media (max-width: 768px) {
+      .logo-bar {
+        flex-wrap: nowrap;
+        padding: 10px 20px;
+        gap: 0.5rem;
+      }
+  
+      .logo-bar img {
+        max-width: 40%;
+        margin: 0;
+        width: clamp(80px, 20vw, 180px);
+      }
+  
+      .logo-left,
+      .logo-right {
+        transform: none !important;
+      }
+    }
+  </style>  
+  
 </head>
 <body>
 
@@ -187,7 +217,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Federated fine-tuning for Large Language Models (LLMs) has recently gained attention dueto the heavy communication overhead of transmitting large model updates.
+            Federated fine-tuning for Large Language Models (LLMs) has recently gained attention due to the heavy communication overhead of transmitting large model updates.
             Low Rank Adaptation (LoRA) has been proposed as a solution, yet its application in federated learning is complicated by discordance in aggregation.
             Existing methods addressing this discordance often suffer from performance degradation at low ranks in heterogeneous data settings.
             In response, we introduce LoRA-A<sup>2</sup> (<b>Lo</b>w <b>R</b>ank <b>A</b>daptation with <b>A</b>lternating freeze and <b>A</b>daptive rank selection),
