@@ -15,7 +15,7 @@
   <meta property="og:description" content="Towards Robust and Efficient Federated Low-Rank Adaptation with Heterogeneous Clients"/>
   <meta property="og:url" content="https://pseudope.github.io/LoRA-A2/"/>
   <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
-  <meta property="og:image" content="static/images/main_figure.png"/>
+  <meta property="og:image" content="static/images/main_figure_final.png"/>
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
 
@@ -23,8 +23,8 @@
   <meta name="twitter:title" content="LoRA-A²">
   <meta name="twitter:description" content="Towards Robust and Efficient Federated Low-Rank Adaptation with Heterogeneous Clients">
   <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
-  <meta name="twitter:image" content="static/images/main_figure.png">
-  <meta name="twitter:card" content="static/images/main_figure.png">
+  <meta name="twitter:image" content="static/images/main_figure_final.png">
+  <meta name="twitter:card" content="static/images/main_figure_final.png">
   <!-- Keywords for your paper to be indexed by-->
   <meta name="keywords" content="Federated Learning, FL, Low-Rank Adaptation, LoRA, ACL, ACL 2025">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -98,7 +98,87 @@
         transform: none !important;
       }
     }
-  </style>  
+
+    .prop-box {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      padding: 1.2em;
+      margin: 2em auto;
+      max-width: 900px;
+      display: flex;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .prop-label {
+      flex: 0 0 140px;
+      font-weight: bold;
+      font-size: 1.05em;
+      padding-right: 1em;
+      text-align: left;
+    }
+
+    .prop-content {
+      flex: 1;
+      text-align: justify;
+    }
+
+    .prop-content p {
+      margin-bottom: 0.75em;
+    }
+
+    .prop-content .math {
+      text-align: center;
+      margin-top: 1em;
+    }
+
+    .responsive-table {
+      overflow-x: auto;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin: 2em 0;
+      width: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table.lora-table {
+      width: 100%;
+      table-layout: auto !important;
+      border-collapse: collapse;
+      font-size: 0.9em;
+      min-width: 900px;
+    }
+
+    table.lora-table th, table.lora-table td {
+      padding: 0.6em;
+      border: 1px solid #ccc;
+      text-align: center !important;
+      vertical-align: middle !important;
+      line-height: 1.2em;
+      white-space: normal;
+    }
+
+    table.lora-table th {
+      background-color: #f7f7f7;
+      font-weight: bold;
+    }
+
+    .bold { font-weight: bold; }
+    .underline { text-decoration: underline; }
+
+    .lora-table td .pm {
+      display: inline-block;         /* ← 핵심! */
+      font-size: 0.8em;
+      font-weight: normal;
+      text-decoration: none;
+      vertical-align: baseline;
+    }
+
+    .lora-table td.underline .pm {
+      text-decoration: none !important;
+    }
+  </style>
   
 </head>
 <body>
@@ -198,7 +278,7 @@
   <div class="container is-max-desktop">
     <div class="hero-body">
       <figure class="image">
-        <img src="./static/images/main_figure.png" alt="Teaser image", style="max-width: 100%; height: auto;">
+        <img src="./static/images/main_figure_final.png" alt="Teaser image", style="max-width: 100%; height: auto;">
       </figure>
       <h2 class="subtitle has-text-centered" style="margin-top: 1.5rem;">
         <strong>LoRA-A<sup>2</sup></strong> comprises two key components: <strong>Alternating freeze</strong> and <strong>Adaptive rank selection</strong>.
@@ -312,7 +392,8 @@
         <div class="content has-text-justified">
           <div class="content" style="margin-top: 1.5rem;">
             <p>
-              Especially with low rank and high data heterogeneity, existing methods struggle to maintain performance.
+              However, as shown in Figure 1, existing methods struggle to maintain performance, especially with low rank and high data heterogeneity.
+              Our goal is to address the discordance problem while maintaining performance in such challenging settings.
             </p>
           </div>
         </div>
@@ -329,7 +410,15 @@
         <div class="content has-text-justified">
           
           <p>
-            asdf
+            Instead of solely training module \( B \) while keeping module \( A \) frozen permanently,
+            LoRA-A<sup>2</sup> alternates between the two:
+            LoRA module \( A \) is frozen during even rounds,
+            while module \( B \) is frozen during odd rounds.
+            This method preserves the optimization space while effectively resolving discordance.
+            Specifically, when freezing \( A \), we have
+            \[ \Delta W = \sum_{k=1}^K \left( w_k B_k \right) A = \sum_{k=1}^K \left( w_k B_k A_k \right) = \sum_{k=1}^K \left( w_k \Delta W_k \right), \]
+            and the same applies when freezing \( B \).
+            In this way, <strong>LoRA-A<sup>2</sup> trains both \( B \) and \( A \)</strong>, ensuring that \( A \) does not remain the same as its initial value.
           </p>
           
         </div>
@@ -346,8 +435,46 @@
         <div class="content has-text-justified">
           
           <p>
-            asdf
+            LoRA-A<sup>2</sup> selects important LoRA ranks to match local communication rank budget \( r_i \)
+            out of global LoRA adapter with rank \( r_G \) <strong>adaptively</strong> based on the local dataset.
+            This approach provides two key benefits:
           </p>
+          <ul>
+            <li>It minimizes client conflicts by allowing <strong>different clients to choose different LoRA ranks in high heterogeneity</strong>.</li>
+            <li>
+              It <strong>reallocates rank resources</strong> from unimportant LoRA modules to modules that require more fine-tuning,
+              which is <strong>especially effective when communication rank budget is small</strong>.
+            </li>
+          </ul>
+          <p>
+            How to calculate? (under construction...)
+          </p>
+          <div class="prop-box">
+            <div class="prop-label">Proposition 1.</div>
+            <div class="prop-content" style="text-align: justify;">
+              <p>
+                For a model \( W \), consider LoRA-based FL algorithms which update \( r \) rank parameters per round.
+                Let \( \Omega_{\mathcal{A}} \) denote the space of all possible parameter values
+                that an algorithm in \( \mathcal{A} \)can make, where:
+              </p>
+              <div class="math" style="text-align: center;">
+                \[
+                  \mathcal{A} \in \left\{ \text{FFA-LoRA}, \text{FL+LoRA}, \text{FlexLoRA}, \text{LoRA-A}^2 \right\}
+                \]
+              </div>
+              <p>
+                Then, we have:
+              </p>
+              <div class="math" style="text-align: center;">
+                \[
+                  \Omega_{\text{FFA-LoRA}} \subsetneq \Omega_{\text{FL+LoRA}} = \Omega_{\text{FlexLoRA}} \subset \Omega_{\text{LoRA-A}^2}.
+                \]
+              </div>
+            </div>
+          </div>
+          
+          
+          
           
         </div>
       </div>
@@ -358,12 +485,82 @@
 <section class="section">
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
+      <div class="column is-full">
         <h2 class="title is-3">Experimental Results</h2>
         <div class="content has-text-justified">
           
-          <p>
-            asdf
+          <div class="responsive-table">
+            <style>
+              .oracle-highlight {
+                background-color: #fdf6e3;
+              }
+              .lora-table td.rotate-label:hover {
+                background-color: #e0f7fa;
+                cursor: pointer;
+              }
+                .lora-table tr td:hover {
+                background-color: #e0f7fa;
+              }
+            </style>
+            
+            <table class="lora-table">
+              <thead>
+                <tr>
+                  <th rowspan="2">LoRA Rank</th>
+                  <th rowspan="2">Method</th>
+                  <th colspan="3">BANKING77 Dataset</th>
+                  <th colspan="3">20 Newsgroups Dataset</th>
+                  <th rowspan="2">Communicated<br>Parameters<sup>*</sup></th>
+                </tr>
+                <tr>
+                  <th>Dir(0.5)</th><th>Dir(0.1)</th><th>Dir(0.01)</th>
+                  <th>Dir(0.5)</th><th>Dir(0.1)</th><th>Dir(0.01)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="oracle-highlight">
+                  <td rowspan="1" class="rotate-label">w/o LoRA</td>
+                  <td>FL (w/o LoRA)</td>
+                  <td>92.76 <span class="pm">± 0.30</span></td>
+                  <td>90.29 <span class="pm">± 0.73</span></td>
+                  <td>67.58 <span class="pm">± 0.44</span></td>
+                  <td>70.93 <span class="pm">± 1.04</span></td>
+                  <td>68.82 <span class="pm">± 0.69</span></td>
+                  <td>64.41 <span class="pm">± 0.30</span></td>
+                  <td>186B</td>
+                </tr>
+
+                <!-- Rank = 8 -->
+                <tr><td rowspan="4">Rank = 8</td><td>FL + LoRA </td><td class="underline">92.80 <span class="pm">± 0.24</span></td><td class="underline">90.47 <span class="pm">± 0.53</span></td><td>60.96 <span class="pm">± 1.47</span></td><td class="underline">70.44 <span class="pm">± 0.28</span></td><td class="underline">67.33 <span class="pm">± 0.18</span></td><td>43.90 <span class="pm">± 1.08</span></td><td>1.99B</td></tr>
+                <tr><td>FFA-LoRA </td><td>87.20 <span class="pm">± 0.57</span></td><td>77.44 <span class="pm">± 1.28</span></td><td>40.88 <span class="pm">± 1.04</span></td><td>67.00 <span class="pm">± 0.67</span></td><td>61.27 <span class="pm">± 0.71</span></td><td>37.34 <span class="pm">± 0.30</span></td><td>0.991B</td></tr>
+                <tr><td>FlexLoRA </td><td class="bold">93.35 <span class="pm">± 0.24</span></td><td class="bold">92.14 <span class="pm">± 0.25</span></td><td class="underline">69.84 <span class="pm">± 0.65</span></td><td class="bold">70.59 <span class="pm">± 0.22</span></td><td class="bold">68.10 <span class="pm">± 0.38</span></td><td class="bold">60.41 <span class="pm">± 1.54</span></td><td>1.99B</td></tr>
+                <tr><td>Ours </td><td class="underline">93.24 <span class="pm">± 0.27</span></td><td class="underline">91.61 <span class="pm">± 0.39</span></td><td class="bold">70.13 <span class="pm">± 1.22</span></td><td>70.26 <span class="pm">± 0.21</span></td><td>67.12 <span class="pm">± 0.22</span></td><td class="underline">54.50 <span class="pm">± 1.44</span></td><td>1.31B</td></tr>
+
+                <!-- Rank = 4 -->
+                <tr><td rowspan="4">Rank = 4</td><td>FL + LoRA </td><td class="underline">92.86 <span class="pm">± 0.08</span></td><td>88.11 <span class="pm">± 0.88</span></td><td>54.99 <span class="pm">± 0.59</span></td><td>70.33 <span class="pm">± 0.12</span></td><td class="underline">67.29 <span class="pm">± 0.19</span></td><td>43.12 <span class="pm">± 2.67</span></td><td>0.991B</td></tr>
+                <tr><td>FFA-LoRA </td><td>86.90 <span class="pm">± 1.14</span></td><td>76.38 <span class="pm">± 0.61</span></td><td>37.63 <span class="pm">± 0.80</span></td><td>67.75 <span class="pm">± 0.45</span></td><td>61.25 <span class="pm">± 0.26</span></td><td>36.04 <span class="pm">± 0.80</span></td><td>0.497B</td></tr>
+                <tr><td>FlexLoRA </td><td>92.71 <span class="pm">± 0.31</span></td><td class="underline">90.53 <span class="pm">± 0.70</span></td><td class="underline">57.38 <span class="pm">± 1.30</span></td><td>70.05 <span class="pm">± 0.14</span></td><td class="bold">68.00 <span class="pm">± 0.33</span></td><td class="underline">50.50 <span class="pm">± 2.09</span></td><td>0.991B</td></tr>
+                <tr><td>Ours </td><td class="bold">93.22 <span class="pm">± 0.24</span></td><td class="bold">91.43 <span class="pm">± 0.63</span></td><td class="bold">69.63 <span class="pm">± 1.52</span></td><td class="bold">70.28 <span class="pm">± 0.32</span></td><td>67.12 <span class="pm">± 0.60</span></td><td class="bold">53.04 <span class="pm">± 1.68</span></td><td>0.888B</td></tr>
+
+                <!-- Rank = 2 -->
+                <tr><td rowspan="4">Rank = 2</td><td>FL + LoRA </td><td>91.97 <span class="pm">± 0.43</span></td><td>85.59 <span class="pm">± 1.13</span></td><td>49.08 <span class="pm">± 0.56</span></td><td class="bold">70.14 <span class="pm">± 0.13</span></td><td>65.40 <span class="pm">± 0.31</span></td><td>39.07 <span class="pm">± 2.23</span></td><td>0.497B</td></tr>
+                <tr><td>FFA-LoRA </td><td>84.65 <span class="pm">± 1.05</span></td><td>73.44 <span class="pm">± 0.88</span></td><td>34.44 <span class="pm">± 2.15</span></td><td>68.12 <span class="pm">± 0.47</span></td><td>61.57 <span class="pm">± 0.38</span></td><td>36.65 <span class="pm">± 0.52</span></td><td>0.249B</td></tr>
+                <tr><td>FlexLoRA </td><td class="underline">92.22 <span class="pm">± 0.50</span></td><td>87.31 <span class="pm">± 0.27</span></td><td class="underline">55.24 <span class="pm">± 2.19</span></td><td>70.03 <span class="pm">± 0.31</span></td><td>66.17 <span class="pm">± 1.70</span></td><td>48.23 <span class="pm">± 1.73</span></td><td>0.497B</td></tr>
+                <tr><td>Ours </td><td class="bold">93.10 <span class="pm">± 0.07</span></td><td class="bold">92.02 <span class="pm">± 0.36</span></td><td class="bold">69.40 <span class="pm">± 0.48</span></td><td class="underline">70.12 <span class="pm">± 0.18</span></td><td class="bold">67.02 <span class="pm">± 0.26</span></td><td class="bold">52.99 <span class="pm">± 2.56</span></td><td>0.528B</td></tr>
+
+                <!-- Rank = 1 -->
+                <tr><td rowspan="4">Rank = 1</td><td>FL + LoRA </td><td class="underline">90.61 <span class="pm">± 0.10</span></td><td class="underline">82.24 <span class="pm">± 1.68</span></td><td class="underline">45.78 <span class="pm">± 1.04</span></td><td>69.40 <span class="pm">± 0.33</span></td><td class="underline">63.16 <span class="pm">± 0.53</span></td><td class="underline">36.58 <span class="pm">± 0.98</span></td><td>0.249B</td></tr>
+                <tr><td>FFA-LoRA </td><td>82.51 <span class="pm">± 0.53</span></td><td>72.96 <span class="pm">± 0.54</span></td><td>33.68 <span class="pm">± 0.20</span></td><td>67.73 <span class="pm">± 0.30</span></td><td>61.35 <span class="pm">± 0.22</span></td><td>34.44 <span class="pm">± 0.68</span></td><td>0.124B</td></tr>
+                <tr><td>FlexLoRA </td><td>90.40 <span class="pm">± 0.54</span></td><td>82.20 <span class="pm">± 0.74</span></td><td>42.75 <span class="pm">± 0.89</span></td><td class="underline">69.53 <span class="pm">± 0.25</span></td><td>62.98 <span class="pm">± 1.12</span></td><td>35.54 <span class="pm">± 0.68</span></td><td>0.249B</td></tr>
+                <tr><td>Ours </td><td class="bold">93.21 <span class="pm">± 0.13</span></td><td class="bold">91.87 <span class="pm">± 0.33</span></td><td class="bold">68.88 <span class="pm">± 1.15</span></td><td class="bold">70.31 <span class="pm">± 0.24</span></td><td class="bold">66.95 <span class="pm">± 0.07</span></td><td class="bold">54.84 <span class="pm">± 1.15</span></td><td>0.270B</td></tr>
+              </tbody>
+            </table>
+          </div>      
+          
+          <p style="font-size: 0.85em;">
+            <strong>Table:</strong> Results with RoBERTa-base on BANKING77 and 20 Newsgroups datasets. Smaller \( \alpha \) for \( Dir(\alpha) \) implies that the simulated setting is more heterogeneous. 
+            The best results on each dataset are shown in <span class="bold">bold</span> and second best in <span class="underline">underline</span>. The metric used here is accuracy (%).
+            <sup>*</sup>This column reports the total number of uploaded parameters, averaged across rows.
           </p>
           
         </div>
@@ -380,7 +577,7 @@
         <div class="content has-text-justified">
           
           <p>
-            asdf
+            (under construction...)
           </p>
           
         </div>
@@ -391,7 +588,7 @@
 <!-- End paper introduction -->
 
 <!-- Teaser image-->
-<section class="hero teaser">
+<!-- <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
       <figure class="image is-16by16">
@@ -402,7 +599,7 @@
       </h2>
     </div>
   </div>
-</section>
+</section> -->
 <!-- End teaser image -->
 
 <!-- Paper poster -->
