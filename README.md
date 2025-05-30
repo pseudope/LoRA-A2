@@ -5,7 +5,7 @@
 The official project page of the paper "Towards Robust and Efficient Federated
 Low-Rank Adaptation with Heterogeneous Clients", which has been accepted in ACL 2025 (Main, Long)
 
-![Overview of LoRA-A²](static/images/main_figure.png)
+![Overview of LoRA-A²](static/images/main_figure_final.png)
 
 ## Acknowledgments
 This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.

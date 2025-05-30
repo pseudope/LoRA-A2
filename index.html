@@ -250,7 +250,7 @@
                     <span class="icon">
                       <i class="fab fa-github"></i>
                     </span>
-                    <span>Code</span>
+                    <span>Code (to be released soon)</span>
                   </a>
                 </span>
 
@@ -333,7 +333,11 @@
           </p>
         
           <p>
-            \[ \sum_{k=1}^K w_k B_k A_k \neq \left( \sum_{k=1}^K w_k B_k \right) \left( \sum_{k=1}^K w_k A_k \right), \]
+            <div style="overflow-x: auto; max-width: 100%;">
+              \[
+              \sum_{k=1}^K w_k B_k A_k \neq \left( \sum_{k=1}^K w_k B_k \right) \left( \sum_{k=1}^K w_k A_k \right),
+              \]
+            </div>
           </p>
         
           <p>
@@ -342,8 +346,20 @@
           </p>
 
           <ul>
-            <li><strong>FFA-LoRA [Sun et al.]</strong> Let \( A_k = A_0 \) be frozen for all \( k \in [K] \), so that \[ \sum_{k=1}^K w_k B_k A_k = \left( \sum_{k=1}^K w_k B_k \right) A_0. \]</li>
-            <li><strong>FlexLoRA [Bai et al.]</strong> Aggregate \( B_kA_k \) directly. Then, using SVD, decompose it back into \[ \sum_{k=1}^K w_k B_k A_k = BA. \]</li>
+            <li><strong>FFA-LoRA [Sun et al.]</strong> Let \( A_k = A_0 \) be frozen for all \( k \in [K] \), so that
+              <div style="overflow-x: auto; max-width: 100%;">
+                \[
+                \sum_{k=1}^K w_k B_k A_k = \left( \sum_{k=1}^K w_k B_k \right) A_0.
+                \]
+              </div>
+            </li>
+            <li><strong>FlexLoRA [Bai et al.]</strong> Aggregate \( B_kA_k \) directly. Then, using SVD, decompose it back into
+              <div style="overflow-x: auto; max-width: 100%;">
+                \[
+                \sum_{k=1}^K w_k B_k A_k = BA.
+                \]
+              </div>
+            </li>
           </ul>
 
         </div>
@@ -354,7 +370,7 @@
 
 <section class="section">
   <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">Limited parameter space in LoRA</h2>
+    <h2 class="title is-3 has-text-centered">Limited Parameter Space in LoRA</h2>
 
     <!-- 그림 2개 나란히 -->
     <div class="columns is-vcentered">
@@ -416,7 +432,11 @@
             while module \( B \) is frozen during odd rounds.
             This method preserves the optimization space while effectively resolving discordance.
             Specifically, when freezing \( A \), we have
-            \[ \Delta W = \sum_{k=1}^K \left( w_k B_k \right) A = \sum_{k=1}^K \left( w_k B_k A_k \right) = \sum_{k=1}^K \left( w_k \Delta W_k \right), \]
+            <div style="overflow-x: auto; max-width: 100%;">
+              \[
+              \Delta W = \sum_{k=1}^K \left( w_k B_k \right) A = \sum_{k=1}^K \left( w_k B_k A_k \right) = \sum_{k=1}^K \left( w_k \Delta W_k \right),
+              \]
+            </div>
             and the same applies when freezing \( B \).
             In this way, <strong>LoRA-A<sup>2</sup> trains both \( B \) and \( A \)</strong>, ensuring that \( A \) does not remain the same as its initial value.
           </p>
@@ -455,11 +475,11 @@
               <p>
                 For a model \( W \), consider LoRA-based FL algorithms which update \( r \) rank parameters per round.
                 Let \( \Omega_{\mathcal{A}} \) denote the space of all possible parameter values
-                that an algorithm in \( \mathcal{A} \)can make, where:
+                that an algorithm in \( \mathcal{A} \) can make, where:
               </p>
               <div class="math" style="text-align: center;">
                 \[
-                  \mathcal{A} \in \left\{ \text{FFA-LoRA}, \text{FL+LoRA}, \text{FlexLoRA}, \text{LoRA-A}^2 \right\}
+                  \mathcal{A} \in \left\{ \text{FFA-LoRA}, \text{FL+LoRA}, \text{FlexLoRA}, \text{LoRA-A}^2 \right\}.
                 \]
               </div>
               <p>
@@ -569,7 +589,7 @@
   </div>
 </section>
 
-<section class="section">
+<!-- <section class="section">
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
@@ -584,7 +604,7 @@
       </div>
     </div>
   </div>
-</section>
+</section> -->
 <!-- End paper introduction -->
 
 <!-- Teaser image-->
