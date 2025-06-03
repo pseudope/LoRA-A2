@@ -439,6 +439,8 @@
             </div>
             and the same applies when freezing \( B \).
             In this way, <strong>LoRA-A<sup>2</sup> trains both \( B \) and \( A \)</strong>, ensuring that \( A \) does not remain the same as its initial value.
+            (Note: Since the standard convention of LoRA initializes \( B \) to zero, we first train \( B \).
+            However, if a different initialization scheme is used, training \( A \) first could also be a reasonable choice.)
           </p>
           
         </div>
