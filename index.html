@@ -393,7 +393,7 @@
 
     </div>
 
-    <!-- 공통 캡션 --> 
+    <!-- 공통 캡션 -->
     <p class="has-text-centered caption" style="margin-top: 1.5rem;">
       <strong>Figure 1:</strong> Accuracy of previous Federated LoRA methods across different rank sizes in heterogeneous data settings.
     </p>
@@ -409,6 +409,7 @@
           <div class="content" style="margin-top: 1.5rem;">
             <p>
               However, as shown in Figure 1, existing methods struggle to maintain performance, especially with low rank and high data heterogeneity.
+              One possible explanation is that <strong> the parameter space available to these methods might be insufficient </strong> to accommodate diverse local updates.
               Our goal is to address the discordance problem while maintaining performance in such challenging settings.
             </p>
           </div>
@@ -434,10 +435,15 @@
             Specifically, when freezing \( A \), we have
             <div style="overflow-x: auto; max-width: 100%;">
               \[
-              \Delta W = \sum_{k=1}^K \left( w_k B_k \right) A = \sum_{k=1}^K \left( w_k B_k A_k \right) = \sum_{k=1}^K \left( w_k \Delta W_k \right),
+              \Delta W = \sum_{k=1}^K \left( w_k B_k \right) A = \sum_{k=1}^K \left( w_k B_k A \right) = \sum_{k=1}^K \left( w_k B_k A_k \right) = \sum_{k=1}^K \left( w_k \Delta W_k \right),
               \]
             </div>
-            and the same applies when freezing \( B \).
+            and when freezing \( B \), we have
+            <div style="overflow-x: auto; max-width: 100%;">
+              \[
+              \Delta W = \sum_{k=1}^K B \left( w_k A_k \right) = \sum_{k=1}^K \left( w_k B A_k \right) = \sum_{k=1}^K \left( w_k B_k A_k \right) = \sum_{k=1}^K \left( w_k \Delta W_k \right).
+              \]
+            </div>
             In this way, <strong>LoRA-A<sup>2</sup> trains both \( B \) and \( A \)</strong>, ensuring that \( A \) does not remain the same as its initial value.
             (Note: Since the standard convention of LoRA initializes \( B \) to zero, we first train \( B \).
             However, if a different initialization scheme is used, training \( A \) first could also be a reasonable choice.)
@@ -469,9 +475,56 @@
             </li>
           </ul>
           <p>
-            How to calculate? (under construction...)
+            Figure 2 below shows the number of selected ranks per module for three clients in a pathological data distribution setting.
+            In this setup, clients 0 and 1 are assigned the "medical" and "space" classes respectively,
+            while client 2 is assigned "motorcycle" and "religions" classes from the 20 Newsgroups dataset.
+            This indicates that <strong>clients with semantically related data tend to converge on similar rank subspaces, potentially enabling more effective cooperative training</strong>.
+            Meanwhile, clients with divergent data distributions select distinct ranks, leading to more independent updates.
+            In addition, we observe that most modules are assigned zero ranks across clients.
+            This suggests that <strong>our adaptive mechanism effectively prunes out modules that do not benefit from fine-tuning</strong>.
+            Please refer to Sections 4.2 and 4.3 for the detailed methodology of our rank selection mechanism.
           </p>
-          <div class="prop-box">
+
+          <!-- 그림 3개 나란히 -->
+          <div class="columns is-vcentered is-multiline">
+
+            <!-- 왼쪽 그림 -->
+            <div class="column is-one-third has-text-centered">
+              <figure class="image">
+                <img src="static/images/0_module_selection.png" alt="ars_client_0">
+              </figure>
+              <p class="caption">(a) Client 0</p>
+            </div>
+
+            <!-- 가운데 그림 -->
+            <div class="column is-one-third has-text-centered">
+              <figure class="image">
+                <img src="static/images/1_module_selection.png" alt="ars_client_1">
+              </figure>
+              <p class="caption">(b)  Client 1</p>
+            </div>
+
+            <!-- 오른쪽 그림 -->
+            <div class="column is-one-third has-text-centered">
+              <figure class="image">
+                <img src="static/images/2_module_selection.png" alt="ars_client_2">
+              </figure>
+              <p class="caption">(c)  Client 2</p>
+            </div>
+
+          </div>
+
+          <!-- 공통 캡션 -->
+          <p class="caption" style="margin-top: 1.5rem; text-align: justify; width: 100%;">
+            <strong>Figure 2:</strong> Visualization on number of selected rank per module.
+            The x-axis shows RoBERTa module types, while the y-axis indicates layer numbers.
+            Experimented on the 20 Newsgroups dataset with a pathological data distribution.
+            Average 2 ranks were selected out of 16 ranks by our adaptive rank selection algorithm.
+          </p>
+          
+
+
+          <!-- <div class="prop-box">
             <div class="prop-label">Proposition 1.</div>
             <div class="prop-content" style="text-align: justify;">
               <p>
@@ -493,7 +546,7 @@
                 \]
               </div>
             </div>
-          </div>
+          </div> -->
           
           
           
@@ -590,54 +643,6 @@
     </div>
   </div>
 </section>
-
-<!-- <section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Ablation Studies</h2>
-        <div class="content has-text-justified">
-          
-          <p>
-            (under construction...)
-          </p>
-          
-        </div>
-      </div>
-    </div>
-  </div>
-</section> -->
-<!-- End paper introduction -->
-
-<!-- Teaser image-->
-<!-- <section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <figure class="image is-16by16">
-        <img src="./static/images/radar_plot_2x2.png" alt="Teaser image", style="max-width: 100%; height: auto;">
-      </figure>
-      <h2 class="subtitle has-text-centered">
-        Main results, which is the same result from the paper.
-      </h2>
-    </div>
-  </div>
-</section> -->
-<!-- End teaser image -->
-
-<!-- Paper poster -->
-<!-- <section class="hero is-small is-light">
-  <div class="hero-body">
-    <div class="container">
-      <h2 class="title">Poster</h2>
-
-      <iframe  src="static/pdfs/sample.pdf" width="100%" height="550">
-          </iframe>
-        
-      </div>
-    </div>
-  </section> -->
-<!--End paper poster -->
-
 
 <!--BibTex citation -->
   <section class="section" id="BibTeX">
