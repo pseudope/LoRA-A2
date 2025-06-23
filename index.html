@@ -204,7 +204,7 @@
                 <span class="author-block">
                   <a href="SECOND AUTHOR PERSONAL LINK" target="_blank">Minwoo Jang</a><sup>*2</sup>,</span>
                   <span class="author-block">
-                    <a href="THIRD AUTHOR PERSONAL LINK" target="_blank">Jungseul Ok</a><sup>†12</sup>
+                    <a href="THIRD AUTHOR PERSONAL LINK" target="_blank">Jungseul Ok</a><sup>†1,2</sup>
                   </span>
                   </div>
 
@@ -322,7 +322,7 @@
         <div class="content has-text-justified">
           <p>
             LoRA approximates the fine-tuned weight as \( W = W_0 + \Delta W = W_0 + BA \), where \( W_0 \) is the frozen pre-trained matrix,
-            and \( B \in \mathbb{R}^{d_1 \times r}, A \in \mathbb{R}^{r \times d_2} \) are low-rank matrices with rank \( r \ll \min(d_1, d_2) \).
+            and \( B \in \mathbb{R}^{d_1 \times r}, A \in \mathbb{R}^{r \times d_2} \) are low-rank matrices with rank \( r \ll \min\{d_1, d_2\} \).
             This reduces the number of trainable parameters from \( d_1 \cdot d_2 \) to \( r \cdot (d_1 + d_2) \),
             which benefits in both <strong>communication and computation efficiency</strong> in Federated Learning (FL).
           </p>
