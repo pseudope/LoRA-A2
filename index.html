@@ -429,8 +429,8 @@
           <p>
             Instead of solely training module \( B \) while keeping module \( A \) frozen permanently,
             LoRA-A<sup>2</sup> alternates between the two:
-            LoRA module \( A \) is frozen during even rounds,
-            while module \( B \) is frozen during odd rounds.
+            LoRA module \( B \) is frozen during even rounds,
+            while module \( A \) is frozen during odd rounds.
             This method preserves the optimization space while effectively resolving discordance.
             Specifically, when freezing \( A \), we have
             <div style="overflow-x: auto; max-width: 100%;">
